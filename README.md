@@ -1,22 +1,28 @@
-# LAN Chat Pro
+# LAN Chat Pro v0.2
 
-React-based internal chat application prepared for cloud and local-network deployment.
+نسخة React/Vite بواجهة محادثة مناسبة للجوال، وتسجيل دخول Supabase Auth.
 
-## Run locally
+## التشغيل المحلي
 
 ```bash
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-Open the LAN address printed by Vite from another device on the same network.
+أضف إلى `.env`:
 
-## Build
-
-```bash
-npm run build
+```env
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_PUBLISHABLE_KEY=...
 ```
+
+بدون المتغيرات يعمل التطبيق في وضع Demo للمعاينة.
 
 ## Supabase
 
-Copy `.env.example` to `.env` and add the project URL and publishable key. Database authentication, realtime rooms, messages, and admin permissions are the next integration step.
+شغّل ملف `supabase/schema.sql` من SQL Editor.
+
+## Vercel
+
+أضف متغيرات البيئة نفسها في Project Settings > Environment Variables، ثم Redeploy.
