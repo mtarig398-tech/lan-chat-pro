@@ -1,42 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import {
-  ArrowRight,
-  Bell,
-  CheckCheck,
-  LogOut,
-  Menu,
-  MessageCircle,
-  MoreVertical,
-  Paperclip,
-  Search,
-  Send,
-  Settings,
-  ShieldCheck,
-  Smile,
-  Users,
-  Wifi,
-  WifiOff,
-} from 'lucide-react'
+import { ArrowRight, Bell, CheckCheck, LogOut, MessageCircle, MoreVertical, Paperclip, Search, Send, Settings, ShieldCheck, Smile, UserCog, Users, X } from 'lucide-react'
 import { supabase, supabaseConfigured } from './lib/supabase'
 import './styles.css'
 
-const demoChats = [
-  { id: 'general', title: 'الفريق العام', avatar: 'ف', last: 'أهلًا بالجميع في LAN Chat Pro', time: '10:32', unread: 2, online: true },
-  { id: 'it', title: 'قسم تقنية المعلومات', avatar: 'ت', last: 'تم تحديث إعدادات الشبكة', time: '09:18', unread: 0, online: true },
-  { id: 'ops', title: 'العمليات', avatar: 'ع', last: 'نحتاج مراجعة الجدول اليوم', time: 'أمس', unread: 1, online: false },
-]
-
-const demoMessages = {
-  general: [
-    { id: 1, sender: 'أحمد', body: 'أهلًا بالجميع في LAN Chat Pro 👋', time: '10:10', mine: false },
-    { id: 2, sender: 'أنت', body: 'هذه نسخة v0.2 بتصميم مناسب للجوال.', time: '10:12', mine: true, read: true },
-  ],
-  it: [{ id: 3, sender: 'أنت', body: 'تم تحديث إعدادات الشبكة.', time: '09:18', mine: true, read: true }],
-  ops: [{ id: 4, sender: 'سارة', body: 'نحتاج مراجعة الجدول اليوم.', time: 'أمس', mine: false }],
-}
-
-function Login({ onDemoLogin }) {
+function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -45,10 +13,6 @@ function Login({ onDemoLogin }) {
   async function signIn(event) {
     event.preventDefault()
     setError('')
-    if (!supabaseConfigured) {
-      onDemoLogin({ email: email || 'demo@local', user_metadata: { display_name: 'مستخدم تجريبي' } })
-      return
-    }
     setLoading(true)
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
     if (signInError) setError(signInError.message)
@@ -61,108 +25,189 @@ function Login({ onDemoLogin }) {
         <div className="authLogo"><MessageCircle size={30} /></div>
         <h1>LAN Chat Pro</h1>
         <p>تواصل داخلي آمن وسريع لفريق العمل</p>
-        <form onSubmit={signIn} className="authForm">
-          <label>البريد الإلكتروني<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" /></label>
-          <label>كلمة المرور<input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" /></label>
+        <form className="authForm" onSubmit={signIn}>
+          <label>البريد الإلكتروني<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></label>
+          <label>كلمة المرور<input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} /></label>
           {error && <div className="errorBox">{error}</div>}
           <button disabled={loading}>{loading ? 'جارٍ الدخول...' : 'تسجيل الدخول'}</button>
         </form>
-        {!supabaseConfigured && <div className="demoHint">وضع المعاينة مفعل. أدخل أي بريد وكلمة مرور للتجربة.</div>}
         <div className="authSecurity"><ShieldCheck size={16} /> محمي بواسطة Supabase Auth</div>
       </section>
     </main>
   )
 }
 
+function AdminPanel({ profiles, onClose, onRefresh, currentRole }) {
+  const [query, setQuery] = useState('')
+  const filtered = profiles.filter((p) => (p.full_name || '').toLowerCase().includes(query.toLowerCase()))
+
+  async function updateUser(id, patch) {
+    const { error } = await supabase.from('profiles').update(patch).eq('id', id)
+    if (error) return alert(error.message)
+    await onRefresh()
+  }
+
+  return (
+    <div className="adminOverlay">
+      <section className="adminPanel">
+        <header>
+          <div><h2>إدارة المستخدمين</h2><p>صلاحيتك الحالية: {currentRole}</p></div>
+          <button onClick={onClose}><X /></button>
+        </header>
+        <div className="adminSearch"><Search size={18} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="بحث عن مستخدم" /></div>
+        <div className="userTable">
+          {filtered.map((p) => (
+            <article key={p.id}>
+              <div className="userAvatar">{(p.full_name || 'U')[0]}</div>
+              <div className="userInfo"><strong>{p.full_name}</strong><span>{p.status} · {p.role}</span></div>
+              <select value={p.role} onChange={(e) => updateUser(p.id, { role: e.target.value })}>
+                <option value="user">User</option>
+                <option value="moderator">Moderator</option>
+                <option value="admin">Admin</option>
+                <option value="super_admin">Super Admin</option>
+              </select>
+              <label className="switch"><input type="checkbox" checked={p.is_active} onChange={(e) => updateUser(p.id, { is_active: e.target.checked })} /><span /></label>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function App() {
   const [session, setSession] = useState(null)
-  const [demoUser, setDemoUser] = useState(null)
-  const [activeChat, setActiveChat] = useState(demoChats[0])
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [query, setQuery] = useState('')
+  const [profile, setProfile] = useState(null)
+  const [profiles, setProfiles] = useState([])
+  const [chats, setChats] = useState([])
+  const [activeChat, setActiveChat] = useState(null)
+  const [messages, setMessages] = useState([])
   const [draft, setDraft] = useState('')
-  const [messages, setMessages] = useState(demoMessages)
+  const [query, setQuery] = useState('')
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [adminOpen, setAdminOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
   const bottomRef = useRef(null)
 
   useEffect(() => {
-    if (!supabaseConfigured) return
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    if (!supabaseConfigured) return setLoading(false)
+    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setLoading(false) })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => setSession(nextSession))
     return () => listener.subscription.unsubscribe()
   }, [])
 
-  useEffect(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), [messages, activeChat])
+  useEffect(() => { if (session) loadAll() }, [session])
 
-  const user = session?.user || demoUser
-  if (!user) return <Login onDemoLogin={setDemoUser} />
+  useEffect(() => {
+    if (!activeChat) return
+    loadMessages(activeChat.id)
+    const channel = supabase.channel(`messages:${activeChat.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${activeChat.id}` },
+        (payload) => setMessages((current) => current.some((m) => m.id === payload.new.id) ? current : [...current, payload.new]))
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [activeChat?.id])
 
-  const filteredChats = demoChats.filter((chat) => chat.title.includes(query) || chat.last.includes(query))
-  const activeMessages = messages[activeChat.id] || []
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
-  async function logout() {
-    if (supabaseConfigured) await supabase.auth.signOut()
-    setDemoUser(null)
+  async function loadAll() {
+    setLoading(true)
+    await Promise.all([loadProfile(), loadProfiles(), loadChats()])
+    setLoading(false)
   }
 
-  function sendMessage(event) {
+  async function loadProfile() {
+    const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
+    setProfile(data)
+  }
+
+  async function loadProfiles() {
+    const { data } = await supabase.from('profiles').select('*').order('created_at')
+    setProfiles(data || [])
+  }
+
+  async function loadChats() {
+    const { data, error } = await supabase.from('chat_members').select('chat_id,chats(id,name,type,created_at)').eq('user_id', session.user.id)
+    if (error) return
+    const list = (data || []).map((x) => x.chats).filter(Boolean)
+    setChats(list)
+    if (!activeChat && list[0]) setActiveChat(list[0])
+  }
+
+  async function loadMessages(chatId) {
+    const { data } = await supabase.from('messages')
+      .select('id,body,created_at,sender_id,profiles:sender_id(full_name)')
+      .eq('chat_id', chatId).is('deleted_at', null).order('created_at')
+    setMessages(data || [])
+  }
+
+  async function sendMessage(event) {
     event.preventDefault()
     const body = draft.trim()
-    if (!body) return
-    setMessages((current) => ({
-      ...current,
-      [activeChat.id]: [...(current[activeChat.id] || []), {
-        id: crypto.randomUUID(), sender: 'أنت', body, mine: true, read: true,
-        time: new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
-      }],
-    }))
-    setDraft('')
+    if (!body || !activeChat) return
+    const { error } = await supabase.from('messages').insert({ chat_id: activeChat.id, sender_id: session.user.id, body })
+    if (error) alert(error.message)
+    else setDraft('')
   }
+
+  async function logout() { await supabase.auth.signOut() }
+
+  if (loading) return <div className="loadingPage">جارٍ التحميل...</div>
+  if (!session) return <Login />
+
+  const isAdmin = ['super_admin', 'admin'].includes(profile?.role)
+  const filteredChats = chats.filter((chat) => (chat.name || 'محادثة').includes(query))
 
   return (
     <div className="appShell">
+      {adminOpen && <AdminPanel profiles={profiles} onClose={() => setAdminOpen(false)} onRefresh={loadProfiles} currentRole={profile?.role} />}
       <aside className={`chatList ${mobileOpen ? 'mobileHidden' : ''}`}>
         <header className="listHeader">
-          <div className="me"><div className="avatar">م</div><div><strong>محمد طارق</strong><span><i /> متصل</span></div></div>
-          <div className="headerButtons"><button title="الإشعارات"><Bell size={19} /></button><button title="الإعدادات"><Settings size={19} /></button><button onClick={logout} title="تسجيل الخروج"><LogOut size={19} /></button></div>
+          <div className="me"><div className="avatar">{(profile?.full_name || 'U')[0]}</div><div><strong>{profile?.full_name || session.user.email}</strong><span><i /> متصل</span></div></div>
+          <div className="headerButtons">
+            {isAdmin && <button title="إدارة المستخدمين" onClick={() => setAdminOpen(true)}><UserCog size={19} /></button>}
+            <button><Bell size={19} /></button><button><Settings size={19} /></button><button onClick={logout}><LogOut size={19} /></button>
+          </div>
         </header>
-        <div className="listTabs"><button className="active"><MessageCircle size={17} />المحادثات</button><button><Users size={17} />الأعضاء</button></div>
-        <div className="chatSearch"><Search size={18} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="بحث أو بدء محادثة" /></div>
+        <div className="listTabs"><button className="active"><MessageCircle size={17} /> المحادثات</button><button><Users size={17} /> الأعضاء</button></div>
+        <div className="chatSearch"><Search size={18} /><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="بحث" /></div>
         <div className="conversationList">
-          {filteredChats.map((chat) => (
-            <button key={chat.id} className={`conversation ${activeChat.id === chat.id ? 'active' : ''}`} onClick={() => { setActiveChat(chat); setMobileOpen(true) }}>
-              <div className="conversationAvatar">{chat.avatar}<i className={chat.online ? 'online' : ''} /></div>
-              <div className="conversationMain"><div><strong>{chat.title}</strong><time>{chat.time}</time></div><div><span>{chat.last}</span>{chat.unread > 0 && <b>{chat.unread}</b>}</div></div>
-            </button>
-          ))}
+          {filteredChats.length === 0 ? <div className="emptyState">لا توجد محادثات بعد</div> :
+            filteredChats.map((chat) => (
+              <button key={chat.id} className={`conversation ${activeChat?.id === chat.id ? 'active' : ''}`}
+                onClick={() => { setActiveChat(chat); setMobileOpen(true) }}>
+                <div className="conversationAvatar">{(chat.name || 'م')[0]}</div>
+                <div className="conversationMain"><div><strong>{chat.name || 'محادثة خاصة'}</strong><time>{new Date(chat.created_at).toLocaleDateString('ar-SA')}</time></div><div><span>اضغط لفتح المحادثة</span></div></div>
+              </button>
+            ))}
         </div>
-        <footer className="connectionStatus">{supabaseConfigured ? <><Wifi size={15} /> Cloud connected</> : <><WifiOff size={15} /> Demo / Local preview</>}</footer>
+        <footer className="connectionStatus">Supabase Realtime connected</footer>
       </aside>
 
       <main className={`chatPanel ${mobileOpen ? 'mobileVisible' : ''}`}>
         <header className="chatHeader">
           <button className="backButton" onClick={() => setMobileOpen(false)}><ArrowRight size={22} /></button>
-          <div className="conversationAvatar large">{activeChat.avatar}<i className={activeChat.online ? 'online' : ''} /></div>
-          <div className="chatIdentity"><strong>{activeChat.title}</strong><span>{activeChat.online ? 'متصل الآن' : 'آخر ظهور أمس'}</span></div>
+          <div className="conversationAvatar large">{(activeChat?.name || 'م')[0]}</div>
+          <div className="chatIdentity"><strong>{activeChat?.name || 'اختر محادثة'}</strong><span>{activeChat ? 'متصل عبر Realtime' : 'لا توجد محادثة محددة'}</span></div>
           <div className="chatActions"><button><Search size={20} /></button><button><MoreVertical size={20} /></button></div>
         </header>
-
         <section className="messageArea">
-          <div className="datePill">اليوم</div>
-          {activeMessages.map((message) => (
-            <article key={message.id} className={`messageBubble ${message.mine ? 'mine' : 'theirs'}`}>
-              {!message.mine && <strong>{message.sender}</strong>}
-              <p>{message.body}</p>
-              <footer><time>{message.time}</time>{message.mine && <CheckCheck size={15} className={message.read ? 'read' : ''} />}</footer>
-            </article>
-          ))}
+          {!activeChat ? <div className="emptyConversation">اختر محادثة للبدء</div> :
+           messages.length === 0 ? <div className="emptyConversation">لا توجد رسائل بعد. ابدأ أول رسالة.</div> :
+           messages.map((m) => {
+             const mine = m.sender_id === session.user.id
+             return <article key={m.id} className={`messageBubble ${mine ? 'mine' : 'theirs'}`}>
+               {!mine && <strong>{m.profiles?.full_name || 'مستخدم'}</strong>}
+               <p>{m.body}</p>
+               <footer><time>{new Date(m.created_at).toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' })}</time>{mine && <CheckCheck size={15} className="read" />}</footer>
+             </article>
+           })}
           <div ref={bottomRef} />
         </section>
-
         <form className="messageComposer" onSubmit={sendMessage}>
-          <button type="button" title="إيموجي"><Smile size={22} /></button>
-          <button type="button" title="مرفق"><Paperclip size={21} /></button>
-          <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="اكتب رسالة" />
-          <button className="sendButton" type="submit"><Send size={20} /></button>
+          <button type="button"><Smile size={22} /></button><button type="button"><Paperclip size={21} /></button>
+          <input disabled={!activeChat} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="اكتب رسالة" />
+          <button className="sendButton" disabled={!activeChat}><Send size={20} /></button>
         </form>
       </main>
     </div>

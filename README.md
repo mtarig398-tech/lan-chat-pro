@@ -1,28 +1,7 @@
-# LAN Chat Pro v0.2
+# LAN Chat Pro v0.3
 
-نسخة React/Vite بواجهة محادثة مناسبة للجوال، وتسجيل دخول Supabase Auth.
-
-## التشغيل المحلي
-
-```bash
-npm install
-cp .env.example .env
-npm run dev
-```
-
-أضف إلى `.env`:
-
-```env
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_PUBLISHABLE_KEY=...
-```
-
-بدون المتغيرات يعمل التطبيق في وضع Demo للمعاينة.
-
-## Supabase
-
-شغّل ملف `supabase/schema.sql` من SQL Editor.
-
-## Vercel
-
-أضف متغيرات البيئة نفسها في Project Settings > Environment Variables، ثم Redeploy.
+1. فك الضغط.
+2. ارفع جميع الملفات إلى جذر مستودع GitHub.
+3. نفّذ Commit.
+4. افتح Supabase SQL Editor وشغّل الملف supabase/v0.3-setup.sql.
+5. انتظر نشر Vercel تلقائيًا.
