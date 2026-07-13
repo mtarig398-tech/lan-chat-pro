@@ -1,7 +1,8 @@
-# LAN Chat Pro v0.3
+# LAN Chat Pro v0.3 Sprint 1
 
-1. فك الضغط.
-2. ارفع جميع الملفات إلى جذر مستودع GitHub.
-3. نفّذ Commit.
-4. افتح Supabase SQL Editor وشغّل الملف supabase/v0.3-setup.sql.
-5. انتظر نشر Vercel تلقائيًا.
+1. ارفع محتويات المجلد إلى جذر GitHub.
+2. اعمل Commit.
+3. شغّل `supabase/v0.3-sprint1.sql` في Supabase SQL Editor.
+4. انتظر نشر Vercel.
+
+الميزات: الأعضاء، المتصلون، آخر ظهور، محادثة خاصة، إنشاء مجموعة، Realtime، إدارة المستخدمين، دعم الجوال.
