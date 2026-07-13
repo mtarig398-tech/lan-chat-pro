@@ -1,235 +1,177 @@
-:root{font-family:Tahoma,Arial,sans-serif;color:#111b21;background:#e9edef}*{box-sizing:border-box}body{margin:0;min-width:320px;min-height:100vh}button,input,select{font:inherit}.loadingPage,.emptyChat{min-height:100vh;display:grid;place-items:center;color:#667781}.authPage{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(180deg,#00a884 0 220px,#e9edef 220px)}.authCard{width:min(430px,100%);background:#fff;border-radius:22px;padding:34px;box-shadow:0 16px 50px #0002;text-align:center}.authLogo{width:64px;height:64px;margin:auto;background:#00a884;color:#fff;border-radius:20px;display:grid;place-items:center}.authForm{display:grid;gap:16px;text-align:right}.authForm label{display:grid;gap:7px}.authForm input,.groupName{padding:13px;border:1px solid #d5dadd;border-radius:12px;outline:none}.authForm button,.primary{padding:14px;border:0;border-radius:12px;background:#00a884;color:#fff;font-weight:700}.errorBox{background:#fff0f0;color:#b42318;padding:10px;border-radius:10px}.authSecurity{margin-top:18px;color:#667781;display:flex;gap:6px;justify-content:center}.appShell{height:100dvh;display:grid;grid-template-columns:410px minmax(0,1fr);max-width:1500px;margin:auto;background:#fff}.sidebar{display:flex;flex-direction:column;border-left:1px solid #d8dde0;min-width:0}.sideHeader,.chatHeader{height:64px;background:#f0f2f5;display:flex;align-items:center;padding:10px 16px}.sideHeader{justify-content:space-between}.me{display:flex;gap:10px;align-items:center;min-width:0}.me strong,.me span,.rowMain strong,.rowMain span{display:block}.me span,.rowMain span,.chatTitle span{font-size:11px;color:#667781;margin-top:3px}.avatar{width:42px;height:42px;border-radius:50%;background:#c7dbe0;display:grid;place-items:center;font-weight:700;position:relative;flex:0 0 auto}.avatar i{position:absolute;width:11px;height:11px;border-radius:50%;background:#9aa8ae;border:2px solid #fff;bottom:0;left:0}.avatar i.online{background:#25d366}.tools{display:flex;gap:2px}.tools button,.back,.more,.modal header button{border:0;background:transparent;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#54656f;cursor:pointer}.tabs{display:grid;grid-template-columns:1fr 1fr;padding:8px 12px;gap:8px}.tabs button{border:0;padding:9px;border-radius:20px;display:flex;align-items:center;justify-content:center;gap:7px}.tabs button.active{background:#d9fdd3;color:#007c68}.searchBox{margin:4px 12px 8px;background:#f0f2f5;border-radius:9px;display:flex;align-items:center;padding:0 12px;color:#667781}.searchBox input{border:0;background:transparent;outline:none;width:100%;padding:11px}.list{overflow:auto;flex:1}.onlineCount{padding:10px 16px;color:#008069;font-size:12px;font-weight:700}.memberRow,.chatRow{width:100%;border:0;background:#fff;display:flex;gap:12px;align-items:center;padding:11px 14px;text-align:right;cursor:pointer}.memberRow:hover,.chatRow:hover,.chatRow.active{background:#f0f2f5}.rowMain{flex:1;min-width:0;border-bottom:1px solid #edf0f2;padding-bottom:10px}.rowMain strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty{padding:42px 22px;text-align:center;color:#667781;line-height:1.8}.sidebar>footer{padding:10px 14px;background:#f0f2f5;color:#667781;font-size:11px}.chatPanel{display:flex;flex-direction:column;min-width:0;background:#efeae2}.chatHeader{border-bottom:1px solid #d8dde0}.chatTitle{margin-right:10px;min-width:0}.chatTitle strong{display:block}.more{margin-right:auto}.back{display:none}.messages{flex:1;overflow:auto;padding:24px 7%;background:#efeae2}.bubble{width:max-content;max-width:70%;padding:7px 9px;margin:5px 0;border-radius:8px;box-shadow:0 1px 1px #0002}.bubble.mine{background:#d9fdd3;margin-right:auto}.bubble.theirs{background:#fff}.bubble>strong{font-size:11px;color:#008069}.bubble p{margin:3px 0;white-space:pre-wrap;overflow-wrap:anywhere}.bubble footer{display:flex;justify-content:flex-end;gap:3px;color:#667781;font-size:10px}.read{color:#53bdeb}.composer{min-height:62px;background:#f0f2f5;padding:9px 13px;display:flex;align-items:center;gap:8px}.composer input{flex:1;border:0;border-radius:22px;padding:12px 16px;outline:none}.composer button{border:0;background:#00a884;color:#fff;width:42px;height:42px;border-radius:50%;display:grid;place-items:center}.overlay{position:fixed;inset:0;background:#0007;z-index:30;display:grid;place-items:center;padding:20px}.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}.modal>header{display:flex;align-items:center;justify-content:space-between}.modal h2{margin:0}.adminRows article{display:grid;grid-template-columns:48px 1fr 150px 50px;gap:12px;align-items:center;padding:14px;border-bottom:1px solid #eee}.switch input{display:none}.switch span{display:block;width:38px;height:22px;background:#bbb;border-radius:20px;position:relative}.switch span:after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;right:2px}.switch input:checked+span{background:#00a884}.switch input:checked+span:after{right:18px}.groupForm{display:grid;gap:14px}.pickMembers{max-height:420px;overflow:auto;border:1px solid #eee;border-radius:12px}.pickMembers label{display:grid;grid-template-columns:24px 48px 1fr;gap:10px;align-items:center;padding:12px;border-bottom:1px solid #eee}.pickMembers strong,.pickMembers span{display:block}.pickMembers span{font-size:11px;color:#667781;margin-top:3px}@media(max-width:760px){.appShell{display:block}.sidebar{height:100%}.chatPanel{display:none;height:100%;position:fixed;inset:0;z-index:5}.sidebar.mobileHidden{display:none}.chatPanel.mobileVisible{display:flex}.back{display:grid}.messages{padding:18px 12px}.bubble{max-width:85%}.sideHeader{padding:8px}.tools button{width:34px;height:34px}.adminRows article{grid-template-columns:44px 1fr}.adminRows select,.adminRows .switch{grid-column:2}.modal{padding:14px}}
-
-/* Sprint 2.1 */
-.chatRowTop,.chatRowBottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.chatRowTop time{font-size:10px;color:#667781;white-space:nowrap}
-.chatRowBottom span{font-size:11px;color:#667781;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:250px}
-.unreadBadge{background:#25d366;color:#fff;min-width:20px;height:20px;padding:0 5px;border-radius:10px;display:grid;place-items:center;font-size:10px;flex:0 0 auto}
-.bellButton{position:relative}
-.bellButton b{position:absolute;top:0;left:0;background:#25d366;color:#fff;border-radius:10px;min-width:17px;height:17px;padding:0 4px;display:grid;place-items:center;font-size:9px}
-.chatTitle{cursor:pointer}
-.groupInfoName{display:flex;gap:8px;margin:10px 0 20px}
-.groupInfoName input{flex:1;border:1px solid #d5dadd;border-radius:10px;padding:11px;outline:none}
-.iconPrimary,.dangerIcon{border:0;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;cursor:pointer}
-.iconPrimary{background:#d9fdd3;color:#008069}
-.dangerIcon{background:#fff0f0;color:#b42318}
-.groupMemberList{border:1px solid #eee;border-radius:12px;overflow:hidden;margin-bottom:18px}
-.groupMemberList article{display:flex;align-items:center;gap:10px;padding:11px 12px;border-bottom:1px solid #eee}
-.groupMemberList article:last-child{border-bottom:0}
-.modal h3{font-size:14px;margin:18px 0 8px;color:#3b4a54}
-/* ===== Sprint 2.1 UI Fixes ===== */
-
-/* تحسين زر الإشعارات */
-.bellButton {
-  position: relative;
-  overflow: visible;
+:root{
+  font-family:Tahoma,Arial,sans-serif;
+  color:#111b21;
+  background:#e9edef;
 }
-
-.bellButton:hover {
-  background: rgba(0, 168, 132, 0.1);
-  color: #008069;
+*{box-sizing:border-box}
+html,body,#root{width:100%;height:100%;margin:0;overflow:hidden}
+body{min-width:320px}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.loadingPage,.emptyChat{height:100%;display:grid;place-items:center;color:#667781}
+.authPage{min-height:100%;display:grid;place-items:center;padding:24px;background:linear-gradient(180deg,#00a884 0 220px,#e9edef 220px)}
+.authCard{width:min(430px,100%);background:#fff;border-radius:22px;padding:34px;box-shadow:0 16px 50px #0002;text-align:center}
+.authLogo{width:64px;height:64px;margin:auto;background:#00a884;color:#fff;border-radius:20px;display:grid;place-items:center}
+.authForm{display:grid;gap:16px;text-align:right}
+.authForm label{display:grid;gap:7px}
+.authForm input,.groupName{padding:13px;border:1px solid #d5dadd;border-radius:12px;outline:none}
+.authForm button,.primary{padding:14px;border:0;border-radius:12px;background:#00a884;color:#fff;font-weight:700}
+.errorBox{background:#fff0f0;color:#b42318;padding:10px;border-radius:10px}
+.authSecurity{margin-top:18px;color:#667781;display:flex;gap:6px;justify-content:center}
+.appShell{
+  height:100vh;
+  height:100dvh;
+  display:grid;
+  grid-template-columns:410px minmax(0,1fr);
+  max-width:1500px;
+  margin:auto;
+  background:#fff;
+  overflow:hidden;
 }
-
-/* عداد الإشعارات العلوي */
-.bellButton b {
-  position: absolute;
-  top: -3px;
-  left: -3px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-
-  border: 2px solid #f0f2f5;
-  border-radius: 999px;
-
-  background: linear-gradient(135deg, #25d366, #00a884);
-  color: white;
-
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1;
-
-  box-shadow: 0 3px 8px rgba(0, 168, 132, 0.35);
+.sidebar{display:flex;flex-direction:column;border-left:1px solid #d8dde0;min-width:0;min-height:0}
+.sideHeader,.chatHeader{height:64px;flex:0 0 64px;background:#f0f2f5;display:flex;align-items:center;padding:10px 16px}
+.sideHeader{justify-content:space-between}
+.me{display:flex;gap:10px;align-items:center;min-width:0}
+.me strong,.me span,.rowMain strong,.rowMain span{display:block}
+.me span,.rowMain span,.chatTitle span{font-size:11px;color:#667781;margin-top:3px}
+.avatar{width:42px;height:42px;border-radius:50%;background:#c7dbe0;display:grid;place-items:center;font-weight:700;position:relative;flex:0 0 auto}
+.avatar i{position:absolute;width:11px;height:11px;border-radius:50%;background:#9aa8ae;border:2px solid #fff;bottom:0;left:0}
+.avatar i.online{background:#25d366}
+.tools{display:flex;gap:2px}
+.tools button,.back,.more,.modal header button,.composerTools button{
+  border:0;background:transparent;width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;color:#54656f
 }
-
-/* عداد الرسائل غير المقروءة */
-.unreadBadge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 22px;
-  height: 22px;
-  padding: 0 7px;
-
-  border-radius: 999px;
-  background: linear-gradient(135deg, #25d366, #00a884);
-  color: #fff;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  box-shadow: 0 3px 8px rgba(0, 168, 132, 0.25);
+.tools button:hover,.composerTools button:hover{background:#e2e6e8}
+.tabs{display:grid;grid-template-columns:1fr 1fr;padding:8px 12px;gap:8px}
+.tabs button{border:0;padding:9px;border-radius:20px;display:flex;align-items:center;justify-content:center;gap:7px}
+.tabs button.active{background:#d9fdd3;color:#007c68}
+.searchBox{margin:4px 12px 8px;background:#f0f2f5;border-radius:9px;display:flex;align-items:center;padding:0 12px;color:#667781}
+.searchBox input{border:0;background:transparent;outline:none;width:100%;padding:11px}
+.list{overflow:auto;flex:1;min-height:0}
+.onlineCount{padding:10px 16px;color:#008069;font-size:12px;font-weight:700}
+.memberRow,.chatRow{width:100%;border:0;background:#fff;display:flex;gap:12px;align-items:center;padding:11px 14px;text-align:right}
+.memberRow:hover,.chatRow:hover,.chatRow.active{background:#f0f2f5}
+.rowMain{flex:1;min-width:0;border-bottom:1px solid #edf0f2;padding-bottom:10px}
+.rowMain strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{padding:42px 22px;text-align:center;color:#667781;line-height:1.8}
+.sidebar>footer{padding:10px 14px;background:#f0f2f5;color:#667781;font-size:11px;flex:0 0 auto}
+.chatPanel{display:flex;flex-direction:column;min-width:0;min-height:0;background:#efeae2;overflow:hidden}
+.chatHeader{border-bottom:1px solid #d8dde0}
+.chatTitle{margin-right:10px;min-width:0}
+.chatTitle strong{display:block}
+.more{margin-right:auto}
+.back{display:none;border:0;background:transparent;color:#54656f}
+.messages{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:18px 7%;
+  background:#efeae2;
 }
-
-/* المحادثات التي تحتوي رسائل غير مقروءة */
-.chatRow:has(.unreadBadge) {
-  background: #f5fffb;
+.messageStack{min-height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.bubble{
+  width:max-content;
+  max-width:min(70%,680px);
+  padding:8px 10px;
+  margin:3px 0;
+  border-radius:10px;
+  box-shadow:0 1px 1px #0002;
 }
-
-.chatRow:has(.unreadBadge) .chatRowTop strong {
-  color: #111b21;
-  font-weight: 700;
+.bubble.mine{background:#d9fdd3;margin-right:auto}
+.bubble.theirs{background:#fff}
+.bubble>strong{font-size:11px;color:#008069}
+.bubble p{margin:3px 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+.bubble footer{display:flex;justify-content:flex-end;gap:3px;color:#667781;font-size:10px}
+.read{color:#53bdeb}
+.composerWrap{position:relative;flex:0 0 auto;background:#f0f2f5;border-top:1px solid #d8dde0}
+.composer{
+  min-height:64px;
+  padding:9px 13px;
+  padding-bottom:max(9px,env(safe-area-inset-bottom));
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
-
-.chatRow:has(.unreadBadge) .chatRowBottom span {
-  color: #008069;
-  font-weight: 600;
+.composerTools{display:flex;align-items:center;gap:2px}
+.composer>input{
+  flex:1;
+  min-width:0;
+  border:0;
+  border-radius:24px;
+  padding:13px 16px;
+  outline:none;
+  background:#fff;
 }
-
-/* تحسين شكل صف المحادثة */
-.chatRow {
-  min-height: 72px;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+.composerAction{
+  border:0;
+  background:#00a884;
+  color:#fff;
+  width:44px;
+  height:44px;
+  flex:0 0 44px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  box-shadow:0 4px 12px #00a88444;
 }
-
-.chatRow:hover {
-  background: #f5f7f8;
+.composerAction:disabled{opacity:.45}
+.emojiPanel{
+  position:absolute;
+  bottom:70px;
+  right:12px;
+  display:grid;
+  grid-template-columns:repeat(5,42px);
+  gap:5px;
+  padding:10px;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 10px 30px #0003;
+  z-index:20;
 }
+.emojiPanel button{border:0;background:transparent;font-size:23px;border-radius:8px}
+.emojiPanel button:hover{background:#f0f2f5}
+.overlay{position:fixed;inset:0;background:#0007;z-index:30;display:grid;place-items:center;padding:20px}
+.modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;padding:20px}
+.modal>header{display:flex;align-items:center;justify-content:space-between}
+.modal h2{margin:0}
+.adminRows article{display:grid;grid-template-columns:48px 1fr 150px 50px;gap:12px;align-items:center;padding:14px;border-bottom:1px solid #eee}
+.switch input{display:none}
+.switch span{display:block;width:38px;height:22px;background:#bbb;border-radius:20px;position:relative}
+.switch span:after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:2px;right:2px}
+.switch input:checked+span{background:#00a884}
+.switch input:checked+span:after{right:18px}
+.groupForm{display:grid;gap:14px}
+.pickMembers{max-height:420px;overflow:auto;border:1px solid #eee;border-radius:12px}
+.pickMembers label{display:grid;grid-template-columns:24px 48px 1fr;gap:10px;align-items:center;padding:12px;border-bottom:1px solid #eee}
+.pickMembers strong,.pickMembers span{display:block}
+.pickMembers span{font-size:11px;color:#667781;margin-top:3px}
 
-.chatRow:active {
-  transform: scale(0.99);
-}
-
-.chatRowTop {
-  margin-bottom: 5px;
-}
-
-.chatRowTop strong {
-  font-size: 14px;
-}
-
-.chatRowTop time {
-  color: #8696a0;
-  font-size: 10px;
-}
-
-.chatRowBottom span {
-  max-width: 230px;
-  color: #667781;
-  font-size: 12px;
-}
-
-/* إصلاح ارتفاع التطبيق على الجوال */
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  overflow: hidden;
-}
-
-.appShell {
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-}
-
-.sidebar,
-.chatPanel {
-  height: 100%;
-  min-height: 0;
-}
-
-/* منع الفراغ أسفل نافذة المحادثة */
-.chatPanel {
-  overflow: hidden;
-}
-
-.messages {
-  min-height: 0;
-  padding-bottom: 18px;
-}
-
-.composer {
-  flex: 0 0 auto;
-  width: 100%;
-  padding-bottom: max(9px, env(safe-area-inset-bottom));
-}
-
-/* تحسين نافذة المحادثة على الجوال */
-@media (max-width: 760px) {
-  html,
-  body,
-  #root {
-    height: 100%;
-    min-height: 100%;
-    overflow: hidden;
+@media(max-width:760px){
+  .appShell{display:block;position:fixed;inset:0;width:100%;height:100dvh;max-width:none}
+  .sidebar{height:100dvh}
+  .chatPanel{display:none;position:fixed;inset:0;width:100%;height:100dvh;z-index:5}
+  .sidebar.mobileHidden{display:none}
+  .chatPanel.mobileVisible{display:flex}
+  .back{display:grid;width:38px;height:38px;place-items:center}
+  .chatHeader{padding:8px 10px}
+  .messages{padding:12px 10px}
+  .bubble{max-width:86%}
+  .sideHeader{padding:8px}
+  .tools button{width:34px;height:34px}
+  .composer{
+    min-height:64px;
+    padding:8px;
+    padding-bottom:max(8px,env(safe-area-inset-bottom));
+    gap:4px;
   }
-
-  .appShell {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100dvh;
-    min-height: 100dvh;
-  }
-
-  .sidebar {
-    height: 100dvh;
-  }
-
-  .chatPanel {
-    position: fixed;
-    inset: 0;
-
-    width: 100%;
-    height: 100dvh;
-    min-height: 100dvh;
-
-    overflow: hidden;
-    background: #efeae2;
-  }
-
-  .chatPanel.mobileVisible {
-    display: flex;
-  }
-
-  .chatHeader {
-    flex: 0 0 64px;
-  }
-
-  .messages {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding-bottom: 14px;
-  }
-
-  .composer {
-    position: relative;
-    bottom: 0;
-
-    flex: 0 0 auto;
-    min-height: 62px;
-
-    padding: 9px 10px;
-    padding-bottom: max(9px, env(safe-area-inset-bottom));
-
-    border-top: 1px solid #d8dde0;
-    background: #f0f2f5;
-  }
-
-  .composer input {
-    min-width: 0;
-  }
+  .composerTools{gap:0}
+  .composerTools button{width:36px;height:36px}
+  .composer>input{padding:12px 14px}
+  .composerAction{width:44px;height:44px;flex-basis:44px}
+  .emojiPanel{right:8px;bottom:72px;grid-template-columns:repeat(5,40px)}
+  .adminRows article{grid-template-columns:44px 1fr}
+  .adminRows select,.adminRows .switch{grid-column:2}
+  .modal{padding:14px}
 }
