@@ -175,17 +175,3 @@ button{cursor:pointer}
   .adminRows select,.adminRows .switch{grid-column:2}
   .modal{padding:14px}
 }
-
-/* Sprint 2.3 */
-.chatTitle{cursor:pointer}
-.groupInfoName{display:flex;gap:8px;margin:10px 0 20px}
-.groupInfoName input{flex:1;padding:11px;border:1px solid #d5dadd;border-radius:10px;outline:none}
-.primaryCompact{border:0;border-radius:10px;background:#00a884;color:#fff;padding:0 16px;font-weight:700}
-.groupMemberList{overflow:hidden;margin-bottom:18px;border:1px solid #eee;border-radius:12px}
-.groupMemberList article{display:flex;align-items:center;gap:10px;padding:11px 12px;border-bottom:1px solid #eee}
-.groupMemberList article:last-child{border-bottom:0}
-.iconPrimary,.dangerIcon{display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:50%}
-.iconPrimary{background:#d9fdd3;color:#008069}
-.dangerIcon{background:#fff0f0;color:#b42318}
-.dangerButton{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:#fff0f0;color:#b42318;padding:13px;font-weight:700}
-.modal h3{font-size:14px;margin:18px 0 8px;color:#3b4a54}
