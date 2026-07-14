@@ -15,7 +15,10 @@ import {
   Settings,
   ShieldCheck,
   Smile,
+  Trash2,
   UserCog,
+  UserMinus,
+  UserPlus,
   Users,
   X,
 } from 'lucide-react'
@@ -338,6 +341,200 @@ function GroupModal({
   )
 }
 
+
+function GroupInfoModal({
+  chat,
+  profiles,
+  currentUserId,
+  onClose,
+  onChanged,
+  onDeleted,
+}) {
+  const [name, setName] = useState(chat.name || '')
+  const [members, setMembers] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const loadMembers = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('chat_members')
+      .select('user_id,member_role,profiles:user_id(*)')
+      .eq('chat_id', chat.id)
+
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    setMembers(data || [])
+    setLoading(false)
+  }, [chat.id])
+
+  useEffect(() => {
+    void loadMembers()
+  }, [loadMembers])
+
+  const myMembership = members.find(
+    (member) => member.user_id === currentUserId
+  )
+
+  const canManage =
+    myMembership?.member_role === 'owner' ||
+    myMembership?.member_role === 'admin'
+
+  async function saveName() {
+    const cleanName = name.trim()
+    if (!cleanName || !canManage) return
+
+    const { error } = await supabase
+      .from('chats')
+      .update({ name: cleanName })
+      .eq('id', chat.id)
+
+    if (error) return alert(error.message)
+
+    await onChanged()
+  }
+
+  async function addMember(profile) {
+    if (!canManage) return
+
+    const { error } = await supabase
+      .from('chat_members')
+      .insert({
+        chat_id: chat.id,
+        user_id: profile.id,
+        member_role: 'member',
+      })
+
+    if (error) return alert(error.message)
+
+    await loadMembers()
+    await onChanged()
+  }
+
+  async function removeMember(userId) {
+    if (!canManage || userId === currentUserId) return
+
+    const { error } = await supabase
+      .from('chat_members')
+      .delete()
+      .eq('chat_id', chat.id)
+      .eq('user_id', userId)
+
+    if (error) return alert(error.message)
+
+    await loadMembers()
+    await onChanged()
+  }
+
+  async function deleteGroup() {
+    if (myMembership?.member_role !== 'owner') return
+
+    const accepted = window.confirm(
+      'سيتم حذف المجموعة ورسائلها نهائيًا. هل تريد المتابعة؟'
+    )
+
+    if (!accepted) return
+
+    const { error } = await supabase.rpc('delete_group', {
+      target_chat_id: chat.id,
+    })
+
+    if (error) return alert(error.message)
+
+    await onDeleted()
+    onClose()
+  }
+
+  const memberIds = new Set(members.map((member) => member.user_id))
+
+  const availableProfiles = profiles.filter(
+    (profile) =>
+      profile.is_active &&
+      profile.id !== currentUserId &&
+      !memberIds.has(profile.id)
+  )
+
+  return (
+    <Modal title="إدارة المجموعة" onClose={onClose}>
+      <div className="groupInfoName">
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          disabled={!canManage}
+        />
+        {canManage && (
+          <button className="primaryCompact" onClick={saveName}>
+            حفظ
+          </button>
+        )}
+      </div>
+
+      <h3>الأعضاء</h3>
+
+      <div className="groupMemberList">
+        {loading ? (
+          <div className="empty">جارٍ التحميل...</div>
+        ) : (
+          members.map((member) => (
+            <article key={member.user_id}>
+              <Avatar profile={member.profiles} />
+
+              <div className="rowMain">
+                <strong>{member.profiles?.full_name || 'مستخدم'}</strong>
+                <span>{member.member_role}</span>
+              </div>
+
+              {canManage &&
+                member.user_id !== currentUserId &&
+                member.member_role !== 'owner' && (
+                  <button
+                    className="dangerIcon"
+                    onClick={() => removeMember(member.user_id)}
+                    title="إزالة العضو"
+                  >
+                    <UserMinus size={18} />
+                  </button>
+                )}
+            </article>
+          ))
+        )}
+      </div>
+
+      {canManage && availableProfiles.length > 0 && (
+        <>
+          <h3>إضافة أعضاء</h3>
+          <div className="groupMemberList">
+            {availableProfiles.map((profile) => (
+              <article key={profile.id}>
+                <Avatar profile={profile} />
+                <div className="rowMain">
+                  <strong>{profile.full_name}</strong>
+                  <span>{formatLastSeen(profile)}</span>
+                </div>
+                <button
+                  className="iconPrimary"
+                  onClick={() => addMember(profile)}
+                  title="إضافة"
+                >
+                  <UserPlus size={18} />
+                </button>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
+
+      {myMembership?.member_role === 'owner' && (
+        <button className="dangerButton" onClick={deleteGroup}>
+          <Trash2 size={18} />
+          حذف المجموعة
+        </button>
+      )}
+    </Modal>
+  )
+}
+
 function Composer({
   disabled,
   value,
@@ -431,8 +628,10 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [adminOpen, setAdminOpen] = useState(false)
   const [groupOpen, setGroupOpen] = useState(false)
+  const [groupInfoOpen, setGroupInfoOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const bottomRef = useRef(null)
+  const audioContextRef = useRef(null)
 
   useEffect(() => {
     if (!supabaseConfigured) {
@@ -460,6 +659,119 @@ function App() {
       listener.subscription.unsubscribe()
     }
   }, [])
+
+
+  const enableNotifications = useCallback(async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        await navigator.serviceWorker.register('/sw.js')
+      }
+
+      if (
+        'Notification' in window &&
+        Notification.permission === 'default'
+      ) {
+        await Notification.requestPermission()
+      }
+
+      if (!audioContextRef.current) {
+        const AudioContextClass =
+          window.AudioContext || window.webkitAudioContext
+
+        if (AudioContextClass) {
+          audioContextRef.current = new AudioContextClass()
+        }
+      }
+
+      if (audioContextRef.current?.state === 'suspended') {
+        await audioContextRef.current.resume()
+      }
+    } catch (error) {
+      console.error('Enable notifications error:', error)
+    }
+  }, [])
+
+  const playNotificationSound = useCallback(async () => {
+    try {
+      const context = audioContextRef.current
+      if (!context) return
+
+      if (context.state === 'suspended') {
+        await context.resume()
+      }
+
+      const oscillator = context.createOscillator()
+      const gain = context.createGain()
+
+      oscillator.type = 'sine'
+      oscillator.frequency.setValueAtTime(880, context.currentTime)
+      oscillator.frequency.setValueAtTime(660, context.currentTime + 0.12)
+
+      gain.gain.setValueAtTime(0.0001, context.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.01)
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.28)
+
+      oscillator.connect(gain)
+      gain.connect(context.destination)
+      oscillator.start()
+      oscillator.stop(context.currentTime + 0.3)
+    } catch (error) {
+      console.error('Notification sound error:', error)
+    }
+  }, [])
+
+  const showMessageNotification = useCallback(
+    async (message) => {
+      if (!message || message.sender_id === session?.user?.id) return
+
+      let sender = profiles.find(
+        (profile) => profile.id === message.sender_id
+      )
+
+      if (!sender) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('id,full_name')
+          .eq('id', message.sender_id)
+          .maybeSingle()
+
+        sender = data
+      }
+
+      const title = sender?.full_name || 'رسالة جديدة'
+      const body = (message.body || '').slice(0, 100)
+
+      await playNotificationSound()
+
+      if (
+        'Notification' in window &&
+        Notification.permission === 'granted'
+      ) {
+        try {
+          const registration = await navigator.serviceWorker?.ready
+
+          if (registration) {
+            await registration.showNotification(title, {
+              body,
+              icon: '/icon-192.png',
+              badge: '/icon-192.png',
+              tag: `chat-${message.chat_id}`,
+              renotify: true,
+              data: {
+                chatId: message.chat_id,
+                url: window.location.origin,
+              },
+            })
+          } else {
+            new Notification(title, { body })
+          }
+        } catch (error) {
+          console.error('Show notification error:', error)
+        }
+      }
+    },
+    [session?.user?.id, profiles, playNotificationSound]
+  )
 
   const loadProfiles = useCallback(async () => {
     if (!session?.user?.id) return
@@ -736,21 +1048,45 @@ function App() {
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'messages',
         },
         (payload) => {
-          void loadChats()
+          const incoming = payload.new
+          const isMine = incoming.sender_id === session.user.id
+          const isCurrentChat = incoming.chat_id === activeChat?.id
 
-          const changedChatId =
-            payload.new?.chat_id ||
-            payload.old?.chat_id
+          setChats((currentChats) =>
+            currentChats
+              .map((chat) =>
+                chat.id === incoming.chat_id
+                  ? {
+                      ...chat,
+                      lastMessage: incoming,
+                      sortAt: incoming.created_at,
+                      unread:
+                        isMine || isCurrentChat
+                          ? 0
+                          : (chat.unread || 0) + 1,
+                    }
+                  : chat
+              )
+              .sort(
+                (first, second) =>
+                  new Date(second.sortAt || 0) -
+                  new Date(first.sortAt || 0)
+              )
+          )
 
-          if (changedChatId === activeChat?.id) {
+          if (isCurrentChat) {
             void loadMessages()
             void markRead(activeChat.id)
+          } else if (!isMine) {
+            void showMessageNotification(incoming)
           }
+
+          void loadChats()
         }
       )
       .on(
@@ -787,6 +1123,7 @@ function App() {
     loadChats,
     loadMessages,
     markRead,
+    showMessageNotification,
   ])
 
   useEffect(() => {
@@ -950,6 +1287,7 @@ function App() {
     setMobileOpen(false)
     setActiveChat(null)
     setMessages([])
+    setGroupInfoOpen(false)
 
     window.history.pushState(
       {
@@ -1014,7 +1352,7 @@ function App() {
   )
 
   return (
-    <div className="appShell">
+    <div className="appShell" onClick={enableNotifications}>
       {adminOpen && (
         <AdminPanel
           profiles={profiles}
@@ -1032,6 +1370,23 @@ function App() {
             await loadChats()
             await openChat(chat)
             setTab('chats')
+          }}
+        />
+      )}
+
+
+      {groupInfoOpen && activeChat?.type === 'group' && (
+        <GroupInfoModal
+          chat={activeChat}
+          profiles={profiles}
+          currentUserId={session.user.id}
+          onClose={() => setGroupInfoOpen(false)}
+          onChanged={async () => {
+            await loadChats()
+          }}
+          onDeleted={async () => {
+            closeConversation()
+            await loadChats()
           }}
         />
       )}
@@ -1277,7 +1632,14 @@ function App() {
             text={activeChat?.name || 'م'}
           />
 
-          <div className="chatTitle">
+          <div
+            className="chatTitle"
+            onClick={() => {
+              if (activeChat?.type === 'group') {
+                setGroupInfoOpen(true)
+              }
+            }}
+          >
             <strong>
               {activeChat?.name ||
                 'اختر محادثة'}
@@ -1294,7 +1656,14 @@ function App() {
             </span>
           </div>
 
-          <button className="more">
+          <button
+            className="more"
+            onClick={() => {
+              if (activeChat?.type === 'group') {
+                setGroupInfoOpen(true)
+              }
+            }}
+          >
             <MoreVertical />
           </button>
         </header>
