@@ -175,3 +175,24 @@ button{cursor:pointer}
   .adminRows select,.adminRows .switch{grid-column:2}
   .modal{padding:14px}
 }
+
+/* Sprint 2.2.2: WhatsApp-style unread counters */
+.bellButton{position:relative;overflow:visible}
+.bellButton b{
+  position:absolute;top:-4px;left:-4px;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;
+  border:2px solid #f0f2f5;border-radius:999px;
+  background:#25d366;color:#fff;font-size:9px;font-weight:700;line-height:1;
+  box-shadow:0 2px 6px rgba(37,211,102,.3)
+}
+.chatRowTop,.chatRowBottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.chatRowTop time{font-size:10px;color:#8696a0;white-space:nowrap}
+.chatRowBottom span{max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#667781}
+.unreadBadge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:20px;height:20px;padding:0 6px;border-radius:999px;
+  background:#25d366;color:#fff;font-size:11px;font-weight:700;line-height:1;
+  box-shadow:0 2px 5px rgba(37,211,102,.28)
+}
+.chatRow:has(.unreadBadge){background:#f4fff9}
